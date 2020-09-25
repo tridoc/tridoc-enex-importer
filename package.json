@@ -1,0 +1,17 @@
+{
+  "name": "tridoc-enex-importer",
+  "version": "1.0.0",
+  "description": "Imports Evernote enex exports to tridoc",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "atob": "^2.1.2",
+    "node-fetch": "^2.6.1",
+    "sax": "^1.2.4"
+  }
+}
