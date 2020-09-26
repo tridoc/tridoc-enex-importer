@@ -35,7 +35,5 @@ export function postDocument (document, endpoint, password) {
     }).then(r => {
       //console.log(r)
     })
-  }).catch(e => {
-    console.log(`error uploading ${document.title}:` ,e)
   })
 }

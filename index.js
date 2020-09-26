@@ -172,19 +172,35 @@ saxStream.on("end", function () {
     console.log('no notes with pdfs found')
     process.exit(1)
   }
-  
-  function processDoc(pos) {
-    return postDocument(documents[pos], process.argv[3], process.argv[4]).then(() => {
-      pos++
-      if (pos < documents.length) {
-        return processDoc(pos)
-      } else {
-        return `processed ${pos} documents`
-      }
-    })
+
+  console.log(`Found ${documents.length} documents. Proceeding with upload.`)
+  function processDocs(docs) {
+    const failedDocs = []
+    function processDoc(pos) {
+      return postDocument(docs[pos], process.argv[3], process.argv[4]).catch(e => {
+        failedDocs.push(docs[pos])
+        console.log(`Failed posting ${docs[pos].title} (${pos+1} of ${docs.length}), error: ${e}`)
+      }).then(() => {
+        pos++
+        if (pos < docs.length) {
+          return processDoc(pos)
+        } else {
+          return `processed ${pos} docs`
+        }
+      })
+    }
+    return processDoc(0).then(() => failedDocs)
   }
-  
-  processDoc(0).then(r => console.log(r))
+  processDocs(documents).then(failedDocs => {
+    if (failedDocs.length === 0) {
+      console.log(`\nSuccessfully uploaded ${documents.length} documents.`)
+    } else {
+      console.log(`\nFailed uploading ${failedDocs.length} of ${documents.length} documents. Retrying.`)
+      return processDocs(failedDocs).then(failedAgain => {
+        console.log(`\nFollowing ${failedAgain.length} documents could not be uploaded: \n - ${failedAgain.map(doc => doc.title).join('\n - ')} `)
+      })
+    }
+  })
 })
 
 if(process.argv.length < 5) {
