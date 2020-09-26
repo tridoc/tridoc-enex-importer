@@ -11,7 +11,7 @@ function convertDate(str) {
 
 export function postDocument (document, endpoint, password) {
   //console.log(`Note ${document.title}\n`)
-  fetch(endpoint+'/doc?date='+encodeURIComponent(convertDate(document.created)), {
+  return fetch(endpoint+'/doc?date='+encodeURIComponent(convertDate(document.created)), {
         method: 'POST',
         headers: {
             'Authorization': 'Basic ' + btoa('tridoc:'+password),
@@ -25,7 +25,7 @@ export function postDocument (document, endpoint, password) {
           return r.headers.get("Location")
       }
     }).then(location => {
-      fetch(endpoint+location+'/title', {
+      return fetch(endpoint+location+'/title', {
         method: 'PUT',
         headers: {
             'Authorization': 'Basic ' + btoa('tridoc:'+password),

@@ -4,6 +4,8 @@ import { parse } from 'path';
 import atob from 'atob';
 import { postDocument } from './post-document.mjs';
 
+//the docuemnts to transfer
+const documents = []
 
 /**
  * to process the parsed xml we use contexts that match
@@ -101,7 +103,7 @@ const rootContext = {
           if (pdfs.length > 1) {
             document.title += ' - ' + pdf.fileName
           }
-          postDocument(document, process.argv[3], process.argv[4])
+          documents.push(document)
         })
       }
     }
@@ -163,6 +165,26 @@ saxStream.on("closetag", function (tagName) {
     resetContext()
   }
   //console.log('closed tag '+ tagName)
+})
+
+saxStream.on("end", function () {
+  if (documents.length === 0) {
+    console.log('no notes with pdfs found')
+    process.exit(1)
+  }
+  
+  function processDoc(pos) {
+    return postDocument(documents[pos], process.argv[3], process.argv[4]).then(() => {
+      pos++
+      if (pos < documents.length) {
+        return processDoc(pos)
+      } else {
+        return `processed ${pos} documents`
+      }
+    })
+  }
+  
+  processDoc(0).then(r => console.log(r))
 })
 
 if(process.argv.length < 5) {
