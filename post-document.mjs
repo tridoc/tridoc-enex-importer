@@ -33,7 +33,24 @@ export function postDocument (document, endpoint, password) {
         },
         body: JSON.stringify({'title': document.title})
     }).then(r => {
-      //console.log(r)
+      if (r.status >= 400) {
+        return r.text().then(j => Promise.reject(j));
+      } else {
+        return fetch(endpoint+location+'/comment', {
+          method: 'POST',
+          headers: {
+              'Authorization': 'Basic ' + btoa('tridoc:'+password),
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({'text': document.content})
+        }).then(r => {
+          if (r.status >= 400) {
+            return r.text().then(j => Promise.reject(j));
+          } else {
+              return 'success'
+          }
+        })
+      }
     })
   })
 }
