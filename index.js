@@ -50,7 +50,22 @@ const rootContext = {
           tags: {
             data: {
               text: function (value) {
-                rootContext.tags.note.tags.resource.value.data = atob(value)
+                let binaryString = atob(value)
+                let len, offset, bytes
+                if (rootContext.tags.note.tags.resource.value.data) {
+                  offset = rootContext.tags.note.tags.resource.value.data.length
+                  len = binaryString.length + offset 
+                  bytes = new Uint8Array(len)
+                  bytes.set(rootContext.tags.note.tags.resource.value.data)
+                } else {
+                  len = binaryString.length
+                  bytes = new Uint8Array(len)
+                  offset = 0
+                }
+                for (var i = offset; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i-offset)
+                }
+                rootContext.tags.note.tags.resource.value.data = bytes
               }
             },
             mime: {
@@ -86,7 +101,7 @@ const rootContext = {
           if (pdfs.length > 1) {
             document.title += ' - ' + pdf.fileName
           }
-          postDocument(document)
+          postDocument(document, process.argv[3], process.argv[4])
         })
       }
     }
@@ -150,8 +165,8 @@ saxStream.on("closetag", function (tagName) {
   //console.log('closed tag '+ tagName)
 })
 
-if(process.argv.length < 3) {
-  console.log('usage: enex-import path')
+if(process.argv.length < 5) {
+  console.log('usage: enex-import path endpoint password')
   process.exit(1)
 }
 
