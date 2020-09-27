@@ -2,7 +2,7 @@ import { default as sax } from 'sax';
 import { createReadStream } from 'fs';
 import { parse } from 'path';
 import atob from 'atob';
-import { postDocument } from './post-document.mjs';
+import TridocConnection from './TridocConnection.mjs';
 
 //the docuemnts to transfer
 const documents = []
@@ -177,7 +177,7 @@ saxStream.on("end", function () {
   function processDocs(docs) {
     const failedDocs = []
     function processDoc(pos) {
-      return postDocument(docs[pos], process.argv[3], process.argv[4]).catch(e => {
+      return tridocConnection.postDocument(docs[pos]).catch(e => {
         failedDocs.push(docs[pos])
         console.log(`Failed posting ${docs[pos].title} (${pos+1} of ${docs.length}), error: ${e}`)
       }).then(() => {
@@ -208,5 +208,6 @@ if(process.argv.length < 5) {
   process.exit(1)
 }
 
+const tridocConnection = new TridocConnection(process.argv[3],process.argv[4])
 createReadStream(process.argv[2])
   .pipe(saxStream)
