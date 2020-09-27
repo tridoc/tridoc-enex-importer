@@ -16,9 +16,6 @@ export default class TridocConnection {
   }
 
   postDocument(document) {
-    //console.log(`Note ${document.title}\n`)
-    
-
     const connection = this
 
     return postPdf().then(setTitle).then(setContentAsComment).then(addTags)
@@ -116,6 +113,5 @@ export default class TridocConnection {
       }
     }
 
-    
   }
 }
