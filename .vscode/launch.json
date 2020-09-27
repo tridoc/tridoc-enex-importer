@@ -12,7 +12,7 @@
         "<node_internals>/**"
       ],
       "program": "${workspaceFolder}/index.js",
-      "args": ["/mnt/c/Users/me/Desktop/tmp/testbook.enex"],
+      "args": ["/mnt/c/Users/me/Desktop/tmp/testbook.enex", "http://localhost:8000", "tridoc"],
        "runtimeArgs": ["--experimental-modules"]
     }
   ]
